@@ -1,7 +1,4 @@
 {
   "name": "presensi-bmkg",
-  "version": "1.0.0",
-  "dependencies": {
-    "@vercel/node": "3.2.1"
-  }
+  "version": "1.0.0"
 }

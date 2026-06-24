@@ -1,10 +1,4 @@
 {
-  "buildCommand": "npm install",
-  "functions": {
-    "api/[endpoint].js": {
-      "runtime": "@vercel/node"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
