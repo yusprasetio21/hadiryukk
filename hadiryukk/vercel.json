@@ -1,17 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/[endpoint]"
-    },
-    {
       "source": "/(.*)",
       "destination": "/public/index.html"
     }
-  ],
-  "functions": {
-    "api/[endpoint].js": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  ]
 }
