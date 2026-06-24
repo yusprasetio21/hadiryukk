@@ -1,4 +1,4 @@
-// api/[endpoint].js - CORS Proxy untuk Vercel
+// api/[endpoint].js
 export default async function handler(req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -36,8 +36,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const fetch = (await import('node-fetch')).default;
-        
+        // Gunakan fetch native Node.js 18+
         const options = {
             method: req.method,
             headers: headers,
