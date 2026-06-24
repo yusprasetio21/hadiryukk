@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Presensi BMKG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+/* [SAME CSS AS BEFORE - abbreviated for length] */
+:root {
+  --radius: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --transition-theme: background .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+
+[data-theme="dark"] {
+  --bg: #0B0F1A;
+  --surface: #141926;
+  --surface2: #1C2235;
+  --surface3: #232A3E;
+  --border: rgba(255,255,255,.06);
+  --border-focus: rgba(0,212,170,.4);
+  --text: #F1F3F8;
+  --text2: #7A8299;
+  --text3: #4A5168;
+  --accent: #00D4AA;
+  --accent-dim: rgba(0,212,170,.12);
+  --accent-glow: rgba(0,212,170,.3);
+  --input-bg: var(--surface2);
+  --overlay: rgba(0,0,0,.6);
+  --toast-bg: rgba(28,34,53,.95);
+  --toggle-track: #2A3148;
+  --toggle-thumb: #fff;
+  --danger: #FF5C6A;
+  --warning: #FFA500;
+  --scrollbar: rgba(255,255,255,.08);
+  --glow1: rgba(0,212,170,.06);
+  --glow2: rgba(255,165,0,.04);
+  --body-outer: #060810;
+}
+
+[data-theme="light"] {
+  --bg: #F0F2F7;
+  --surface: #FFFFFF;
+  --surface2: #F5F6FA;
+  --surface3: #ECEEF3;
+  --border: rgba(0,0,0,.07);
+  --border-focus: rgba(0,180,150,.4);
+  --text: #1A1D2B;
+  --text2: #6B7280;
+  --text3: #A0A6B8;
+  --accent: #00B896;
+  --accent-dim: rgba(0,184,150,.1);
+  --accent-glow: rgba(0,184,150,.2);
+  --input-bg: var(--surface2);
+  --overlay: rgba(0,0,0,.35);
+  --toast-bg: rgba(255,255,255,.95);
+  --toggle-track: #D1D5DB;
+  --toggle-thumb: #fff;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --scrollbar: rgba(0,0,0,.08);
+  --glow1: rgba(0,184,150,.05);
+  --glow2: rgba(245,158,11,.04);
+  --body-outer: #E5E7EE;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--body-outer);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: var(--transition-theme);
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+
+.status-bar {
+  height: var(--safe-top);
+  min-height: 12px;
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: var(--transition-theme);
+}
+
+.header {
+  background: var(--surface);
+  padding: 14px 20px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition-theme);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 20px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.header-badge .material-icons-round { font-size: 13px; }
+
+.header-time {
+  text-align: right;
+}
+
+.header-time-label {
+  font-size: 10px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.header-time-value {
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+
+.icon-btn:active {
+  transform: scale(.92);
+  background: var(--surface3);
+}
+
+.icon-btn .material-icons-round { font-size: 20px; }
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.toggle-label .material-icons-round { font-size: 14px; }
+
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--toggle-track);
+  border-radius: 14px;
+  transition: background .3s;
+}
+
+.toggle input:checked + .toggle-track {
+  background: var(--accent);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: var(--toggle-thumb);
+  border-radius: 50%;
+  transition: transform .3s cubic-bezier(.4,.0,.2,1), box-shadow .3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  pointer-events: none;
+}
+
+.toggle input:checked ~ .toggle-thumb {
+  transform: translateX(20px);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), #00A888);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.header-logo-icon .material-icons-round {
+  font-size: 22px;
+  color: #fff;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.3px;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.main {
+  flex: 1;
+  padding: 14px 14px calc(14px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: var(--transition-theme);
+}
+
+.location-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+
+.location-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255,165,0,.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.location-icon-wrap .material-icons-round {
+  font-size: 20px;
+  color: var(--warning);
+}
+
+.location-info { flex: 1; min-width: 0; }
+
+.location-name {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-coords {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.location-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 4px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.location-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-dot 2s infinite;
+}
+
+.datetime-card {
+  animation: slideUp .5s cubic-bezier(.16,1,.3,1) .12s both;
+}
+
+.datetime-label {
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.datetime-label .material-icons-round { font-size: 15px; }
+
+.datetime-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.datetime-box {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transition: var(--transition-theme);
+  cursor: pointer;
+}
+
+.datetime-box:hover {
+  border-color: var(--border-focus);
+  background: var(--surface3);
+}
+
+.datetime-box .material-icons-round { font-size: 18px; flex-shrink: 0; }
+.datetime-box.ic-date .material-icons-round { color: var(--accent); }
+.datetime-box.ic-time .material-icons-round { color: var(--warning); }
+
+.datetime-box-text { display: flex; flex-direction: column; min-width: 0; }
+
+.datetime-box-text .primary {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.datetime-box-text .secondary {
+  font-size: 10px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.datetime-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.presence-card {
+  animation: slideUp .5s cubic-bezier(.16,1,.3,1) .15s both;
+}
+
+.presence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.presence-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.presence-item .label {
+  font-size: 9px;
+  color: var(--text2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.presence-item .value {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.presence-item .value.present { color: var(--accent); }
+.presence-item .value.absent { color: var(--text3); }
+.presence-item .value.alert { color: var(--danger); }
+
+.presence-status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.presence-status-badge.success {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.presence-status-badge.warning {
+  background: rgba(255,165,0,.12);
+  color: var(--warning);
+}
+
+.action-area {
+  margin-top: auto;
+  padding-top: 6px;
+  animation: slideUp .5s cubic-bezier(.16,1,.3,1) .24s both;
+}
+
+.btn-absen {
+  width: 100%;
+  padding: 17px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--accent), #00A888);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .15s, box-shadow .3s, opacity .3s;
+  box-shadow: 0 8px 30px var(--accent-glow);
+  letter-spacing: .2px;
+}
+
+.btn-absen .material-icons-round { font-size: 21px; }
+
+.btn-absen:active {
+  transform: scale(.97);
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+
+.btn-absen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(255,255,255,.25) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .4s;
+}
+
+.btn-absen:active::after { opacity: 1; }
+
+.btn-absen.loading { pointer-events: none; opacity: .8; }
+.btn-absen.loading .btn-text,
+.btn-absen.loading .material-icons-round { opacity: 0; }
+
+.btn-spinner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.btn-absen.loading .btn-spinner { opacity: 1; }
+
+.btn-note {
+  text-align: center;
+  margin-top: 9px;
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.sheet-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 201;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  padding: 0 20px calc(20px + var(--safe-bottom));
+  transform: translateY(100%);
+  transition: transform .4s cubic-bezier(.16,1,.3,1);
+  max-height: 85dvh;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+}
+
+.sheet.open {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--text3);
+  margin: 12px auto 18px;
+  flex-shrink: 0;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.sheet-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.2px;
+}
+
+.sheet-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.sheet-close:active { transform: scale(.88); }
+.sheet-close .material-icons-round { font-size: 18px; }
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.field-label .material-icons-round { font-size: 15px; color: var(--accent); }
+
+.field-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-input {
+  flex: 1;
+  padding: 13px 14px;
+  padding-right: 42px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.field-input::placeholder {
+  color: var(--text3);
+  font-weight: 400;
+}
+
+.field-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.field-toggle-vis {
+  position: absolute;
+  right: 4px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color .2s;
+}
+
+.field-toggle-vis:hover { color: var(--text2); }
+.field-toggle-vis .material-icons-round { font-size: 19px; }
+
+.btn-upload {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--accent), #00A888);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: transform .15s, box-shadow .3s;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.btn-upload .material-icons-round { font-size: 18px; }
+
+.btn-upload:active {
+  transform: scale(.95);
+}
+
+.btn-upload.loading {
+  opacity: .7;
+  pointer-events: none;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--accent), #00A888);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform .15s, box-shadow .3s;
+  box-shadow: 0 6px 24px var(--accent-glow);
+  margin-top: 6px;
+}
+
+.btn-save .material-icons-round { font-size: 19px; }
+.btn-save:active { transform: scale(.97); }
+
+.sheet-footer-note {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.4;
+}
+
+.toast-container {
+  position: fixed;
+  top: calc(var(--safe-top) + 12px);
+  left: 14px;
+  right: 14px;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--toast-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: toastIn .4s cubic-bezier(.16,1,.3,1) forwards;
+  pointer-events: auto;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.toast.out { animation: toastOut .3s ease forwards; }
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-icon .material-icons-round { font-size: 18px; color: #fff; }
+.toast-icon.success { background: var(--accent); }
+.toast-icon.error { background: var(--danger); }
+
+.toast-body { flex: 1; min-width: 0; }
+
+.toast-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 1px;
+}
+
+.toast-msg {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.toast-close .material-icons-round { font-size: 17px; }
+
+.glow-orb {
+  position: fixed;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  top: -50px;
+  right: -70px;
+  transition: background .5s;
+}
+
+.glow-orb-2 {
+  position: fixed;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow2) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  bottom: 80px;
+  left: -70px;
+  transition: background .5s;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes toastIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateY(-20px) scale(.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (min-width: 500px) {
+  .main {
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .header {
+    max-width: 420px;
+    margin: 0 auto;
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .sheet {
+    max-width: 420px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    border-radius: 24px 24px 0 0;
+  }
+  .sheet.open {
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast-container {
+    max-width: 420px;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    width: calc(100% - 28px);
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-upload span.btn-text {
+    display: none;
+  }
+  .btn-upload {
+    padding: 12px 14px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="glow-orb"></div>
+<div class="glow-orb-2"></div>
+
+<div class="status-bar"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-top">
+    <div class="header-left">
+      <span class="header-badge">
+        <span class="material-icons-round">verified</span>
+        Resmi
+      </span>
+    </div>
+    <div class="header-actions">
+      <div class="toggle-wrap">
+        <span class="toggle-label" id="themeLabelIcon">
+          <span class="material-icons-round">dark_mode</span>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="themeToggle" checked>
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <button class="icon-btn" id="btnSettings" aria-label="Pengaturan">
+        <span class="material-icons-round">settings</span>
+      </button>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="header-logo">
+      <div class="header-logo-icon">
+        <span class="material-icons-round">cloud</span>
+      </div>
+      <div>
+        <div class="header-title">Hadir Yukk APP</div>
+        <div class="header-subtitle">Solusi Absen Cepat & Tepat Absensi Harian Anda</div>
+      </div>
+    </div>
+    <div class="header-time">
+      <div class="header-time-label">WIB</div>
+      <div class="header-time-value" id="liveTime">--:--:--</div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Location Card -->
+  <div class="card location-card">
+    <div class="location-icon-wrap">
+      <span class="material-icons-round">location_on</span>
+    </div>
+    <div class="location-info">
+      <div class="location-name" id="locName">Stasiun Meteorologi Kemayoran</div>
+      <div class="location-coords" id="locCoords">-6.1559421, 106.8409752</div>
+    </div>
+    <div class="location-status">
+      <span class="dot"></span>
+      <span id="statusText">Aktif</span>
+    </div>
+  </div>
+
+  <!-- Datetime Card -->
+  <div class="card datetime-card">
+    <div class="datetime-label">
+      <span class="material-icons-round">schedule</span>
+      Absen Manual Pilih Tanggal & Jam
+    </div>
+    <div class="datetime-display">
+      <div class="datetime-box ic-date" id="dateBox" onclick="openDateTimePicker()">
+        <span class="material-icons-round">calendar_today</span>
+        <div class="datetime-box-text">
+          <span class="primary" id="dateDay">--</span>
+          <span class="secondary" id="dateFull">--</span>
+        </div>
+      </div>
+      <div class="datetime-box ic-time" id="timeBox" onclick="openDateTimePicker()">
+        <span class="material-icons-round">access_time</span>
+        <div class="datetime-box-text">
+          <span class="primary" id="timeValue">--:--</span>
+          <span class="secondary">WIB (UTC+7)</span>
+        </div>
+      </div>
+    </div>
+    <input type="datetime-local" class="datetime-hidden" id="tanggal">
+  </div>
+
+  <!-- Presence Info Card -->
+  <div class="card presence-card">
+    <div class="datetime-label">
+      <span class="material-icons-round">fact_check</span>
+      Data Presensi Hari Ini
+    </div>
+    <div class="presence-grid">
+      <div class="presence-item">
+        <div class="label">Check In</div>
+        <div class="value" id="checkInTime">--:--</div>
+        <div id="checkInStatus"></div>
+      </div>
+      <div class="presence-item">
+        <div class="label">Check Out</div>
+        <div class="value" id="checkOutTime">--:--</div>
+        <div id="checkOutStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action -->
+  <div class="action-area">
+    <button class="btn-absen" id="btnAbsen" onclick="absen()">
+      <span class="btn-spinner"></span>
+      <span class="material-icons-round">how_to_reg</span>
+      <span class="btn-text">Absen Sekarang</span>
+    </button>
+    <div class="btn-note">Pastikan Anda berada di area checkpoint</div>
+  </div>
+
+</main>
+
+<!-- SETTINGS OVERLAY -->
+<div class="sheet-overlay" id="sheetOverlay"></div>
+
+<!-- SETTINGS BOTTOM SHEET -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Pengaturan</div>
+    <button class="sheet-close" id="sheetClose" aria-label="Tutup">
+      <span class="material-icons-round">close</span>
+    </button>
+  </div>
+
+  <!-- API Key -->
+  <div class="field">
+    <label class="field-label">
+      <span class="material-icons-round">vpn_key</span>
+      X-API-Key
+    </label>
+    <div class="field-input-wrap">
+      <div style="flex:1;position:relative;">
+        <input type="password" class="field-input" id="inputApiKey"
+               placeholder="Masukkan X-API-Key Anda" autocomplete="off" value="0321c92441dd9b52d67bf5c072f9c6af">
+        <button class="field-toggle-vis" id="toggleApiKey" aria-label="Tampilkan">
+          <span class="material-icons-round">visibility_off</span>
+        </button>
+      </div>
+      <button class="btn-upload" id="btnUploadKey" onclick="uploadApiKey()">
+        <span class="material-icons-round">cloud_upload</span>
+        <span class="btn-text">Upload</span>
+      </button>
+    </div>
+    <div class="field-hint">Key autentikasi untuk akses API presensi. Klik Upload untuk menyimpan ke database.</div>
+  </div>
+
+  <!-- NIP -->
+  <div class="field">
+    <label class="field-label">
+      <span class="material-icons-round">badge</span>
+      NIP Pegawai
+    </label>
+    <div class="field-input-wrap">
+      <input type="text" class="field-input" id="inputNip"
+             placeholder="Contoh: 198501012010011001" maxlength="22" inputmode="numeric" value="198902202010121001">
+    </div>
+    <div class="field-hint">Nomor Induk Pegawai sepanjang 18 digit.</div>
+  </div>
+
+  <!-- Checkpoint ID -->
+  <div class="field">
+    <label class="field-label">
+      <span class="material-icons-round">my_location</span>
+      Checkpoint ID
+    </label>
+    <div class="field-input-wrap">
+      <input type="text" class="field-input" id="inputCheckpoint"
+             placeholder="Contoh: 1749" inputmode="numeric" value="1749">
+    </div>
+    <div class="field-hint">ID lokasi checkpoint GPS yang terdaftar di sistem.</div>
+  </div>
+
+  <!-- Latitude -->
+  <div class="field">
+    <label class="field-label">
+      <span class="material-icons-round">explore</span>
+      Latitude
+    </label>
+    <div class="field-input-wrap">
+      <input type="text" class="field-input" id="inputLatitude"
+             placeholder="Contoh: -6.1559421" value="-6.1559421">
+    </div>
+    <div class="field-hint">Koordinat lintang lokasi checkpoint.</div>
+  </div>
+
+  <!-- Longitude -->
+  <div class="field">
+    <label class="field-label">
+      <span class="material-icons-round">explore</span>
+      Longitude
+    </label>
+    <div class="field-input-wrap">
+      <input type="text" class="field-input" id="inputLongitude"
+             placeholder="Contoh: 106.8409752" value="106.8409752">
+    </div>
+    <div class="field-hint">Koordinat bujur lokasi checkpoint.</div>
+  </div>
+
+  <!-- Location Name -->
+  <div class="field">
+    <label class="field-label">
+      <span class="material-icons-round">place</span>
+      Nama Lokasi
+    </label>
+    <div class="field-input-wrap">
+      <input type="text" class="field-input" id="inputLocName"
+             placeholder="Contoh: Stasiun Meteorologi Kemayoran" value="Stasiun Meteorologi Kemayoran">
+    </div>
+    <div class="field-hint">Nama lokasi checkpoint (opsional).</div>
+  </div>
+
+  <button class="btn-save" id="btnSave">
+    <span class="material-icons-round">save</span>
+    Simpan Pengaturan
+  </button>
+  <div class="sheet-footer-note">Data disimpan secara lokal dan terintegrasi dengan database.</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* === KONFIGURASI === */
+const SUPABASE_URL = 'https://cblijzkmsxmfemeendia.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNibGlqemttc3htZmVtZWVuZGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2OTA2MjIsImV4cCI6MjA5NjI2NjYyMn0.CPsriKTsxHNAwayIkxEIfpWwcdt8tm7V-76j4j4zhQM';
+
+// === KONFIGURASI PROXY UNTUK VERCEL ===
+// Setelah deploy ke Vercel, gunakan URL ini
+const USE_PROXY = true;
+const PROXY_URL = '/api/'; // Relative path untuk Vercel
+
+// Untuk development local, bisa gunakan:
+// const PROXY_URL = 'http://localhost:3000/api/';
+
+function getApiUrl(endpoint) {
+    if (!USE_PROXY) {
+        return `https://spreso.bmkg.go.id/api-mobile-presence/index.php/api/v2/${endpoint}`;
+    }
+    return `${PROXY_URL}${endpoint}`;
+}
+
+const TABLE_USER_SETTINGS = 'user_settings';
+
+/* === DOM REFS === */
+const $ = (s) => document.querySelector(s);
+const elTanggal = $('#tanggal');
+const elDateDay = $('#dateDay');
+const elDateFull = $('#dateFull');
+const elTimeValue = $('#timeValue');
+const elLiveTime = $('#liveTime');
+const elBtn = $('#btnAbsen');
+const elToast = $('#toastContainer');
+const elThemeToggle = $('#themeToggle');
+const elThemeLabelIcon = $('#themeLabelIcon');
+const elSheet = $('#sheet');
+const elOverlay = $('#sheetOverlay');
+const elCheckInTime = $('#checkInTime');
+const elCheckOutTime = $('#checkOutTime');
+const elCheckInStatus = $('#checkInStatus');
+const elCheckOutStatus = $('#checkOutStatus');
+const elLocName = $('#locName');
+const elLocCoords = $('#locCoords');
+const elStatusText = $('#statusText');
+
+const elInputApiKey = $('#inputApiKey');
+const elInputNip = $('#inputNip');
+const elInputCheckpoint = $('#inputCheckpoint');
+const elInputLatitude = $('#inputLatitude');
+const elInputLongitude = $('#inputLongitude');
+const elInputLocName = $('#inputLocName');
+
+/* === KONSTANTA === */
+const HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni',
+               'Juli','Agustus','September','Oktober','November','Desember'];
+
+/* === UTILITAS WIB === */
+function toWIB(date) {
+  const utc = date.getTime() + date.getTimezoneOffset() * 60000;
+  return new Date(utc + 7 * 3600000);
+}
+
+function formatTime(date) {
+  return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+}
+
+/* === OPEN DATETIME PICKER === */
+function openDateTimePicker() {
+  elTanggal.showPicker ? elTanggal.showPicker() : elTanggal.click();
+}
+
+/* === JAM LIVE === */
+function tickClock() {
+  const now = toWIB(new Date());
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  elLiveTime.textContent = `${hh}:${mm}:${ss}`;
+  elDateDay.textContent = HARI[now.getDay()];
+  elDateFull.textContent = `${now.getDate()} ${BULAN[now.getMonth()]} ${now.getFullYear()}`;
+  elTimeValue.textContent = `${hh}:${mm}`;
+}
+
+function syncInput() {
+  const now = toWIB(new Date());
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  elTanggal.value = `${y}-${m}-${d}T${hh}:${mm}`;
+}
+
+tickClock();
+syncInput();
+setInterval(tickClock, 1000);
+
+/* Sinkronkan jika user ubah manual */
+elTanggal.addEventListener('change', () => {
+  const v = elTanggal.value;
+  if (!v) return;
+  const [dp, tp] = v.split('T');
+  const [yr, mo, dy] = dp.split('-').map(Number);
+  const [hr, mi] = tp.split(':').map(Number);
+  const d = toWIB(new Date(yr, mo - 1, dy, hr, mi));
+  elDateDay.textContent = HARI[d.getDay()];
+  elDateFull.textContent = `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+  elTimeValue.textContent = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+});
+
+/* === RIPPLE === */
+elBtn.addEventListener('pointerdown', (e) => {
+  const r = elBtn.getBoundingClientRect();
+  elBtn.style.setProperty('--x', ((e.clientX - r.left) / r.width * 100) + '%');
+  elBtn.style.setProperty('--y', ((e.clientY - r.top) / r.height * 100) + '%');
+});
+
+/* === TOAST === */
+function showToast(type, title, msg, dur = 4000) {
+  const icons = { success: 'check_circle', error: 'error', info: 'info' };
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `
+    <div class="toast-icon ${type}"><span class="material-icons-round">${icons[type] || 'info'}</span></div>
+    <div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>
+    <button class="toast-close" onclick="dismissToast(this.parentElement)"><span class="material-icons-round">close</span></button>`;
+  elToast.appendChild(t);
+  setTimeout(() => dismissToast(t), dur);
+}
+
+function dismissToast(el) {
+  if (!el || el.classList.contains('out')) return;
+  el.classList.add('out');
+  setTimeout(() => el.remove(), 300);
+}
+
+/* === DARK/LIGHT TOGGLE === */
+function applyTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  elThemeToggle.checked = dark;
+  elThemeLabelIcon.innerHTML = dark
+    ? '<span class="material-icons-round">dark_mode</span>'
+    : '<span class="material-icons-round">light_mode</span>';
+  localStorage.setItem('bmkg_theme', dark ? 'dark' : 'light');
+}
+
+const savedTheme = localStorage.getItem('bmkg_theme');
+applyTheme(savedTheme !== 'light');
+
+elThemeToggle.addEventListener('change', () => {
+  applyTheme(elThemeToggle.checked);
+});
+
+/* === BOTTOM SHEET === */
+function openSheet() {
+  elOverlay.classList.add('open');
+  elSheet.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+  elSheet.classList.remove('open');
+  elOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('btnSettings').addEventListener('click', openSheet);
+document.getElementById('sheetClose').addEventListener('click', closeSheet);
+elOverlay.addEventListener('click', closeSheet);
+
+document.querySelectorAll('.sheet-close').forEach(btn => {
+  btn.addEventListener('click', closeSheet);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && elSheet.classList.contains('open')) {
+    closeSheet();
+  }
+});
+
+/* === VISIBILITY TOGGLE UNTUK API KEY === */
+document.getElementById('toggleApiKey').addEventListener('click', () => {
+  const isPass = elInputApiKey.type === 'password';
+  elInputApiKey.type = isPass ? 'text' : 'password';
+  document.querySelector('#toggleApiKey .material-icons-round').textContent =
+    isPass ? 'visibility' : 'visibility_off';
+});
+
+/* === GENERATE UUID === */
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+/* === UPLOAD API KEY KE SUPABASE === */
+async function uploadApiKey() {
+  const apiKey = elInputApiKey.value.trim();
+  const nip = elInputNip.value.trim();
+  
+  if (!apiKey) {
+    showToast('error', 'API Key Kosong', 'Silakan masukkan X-API-Key terlebih dahulu.');
+    return;
+  }
+
+  if (!nip) {
+    showToast('error', 'NIP Kosong', 'Silakan masukkan NIP terlebih dahulu.');
+    elInputNip.focus();
+    return;
+  }
+
+  const btnUpload = document.getElementById('btnUploadKey');
+  btnUpload.classList.add('loading');
+  btnUpload.disabled = true;
+
+  try {
+    const result = await saveToSupabase(nip, apiKey);
+    
+    if (result.success) {
+      showToast('success', 'Upload Berhasil', `API Key untuk NIP ${nip} berhasil disimpan ke database.`);
+      localStorage.setItem('bmkg_apikey', apiKey);
+      localStorage.setItem('bmkg_nip', nip);
+    } else {
+      showToast('error', 'Upload Gagal', result.message || 'Terjadi kesalahan saat upload.');
+    }
+  } catch (error) {
+    console.error('Upload error:', error);
+    showToast('error', 'Upload Gagal', error.message || 'Tidak dapat terhubung ke server.');
+  } finally {
+    btnUpload.classList.remove('loading');
+    btnUpload.disabled = false;
+  }
+}
+
+/* === SAVE TO SUPABASE === */
+async function saveToSupabase(nip, apiKey) {
+  try {
+    if (!navigator.onLine) {
+      throw new Error('Tidak ada koneksi internet.');
+    }
+
+    const checkResponse = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_USER_SETTINGS}?nip=eq.${encodeURIComponent(nip)}&select=id`, {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!checkResponse.ok) {
+      throw new Error(`Gagal memeriksa data: ${checkResponse.status}`);
+    }
+
+    const existingUsers = await checkResponse.json();
+    const userId = existingUsers && existingUsers.length > 0 ? existingUsers[0].id : generateUUID();
+
+    const settingsData = {
+      nip: nip,
+      api_key: apiKey,
+      gps_id: elInputCheckpoint.value.trim() || '1749',
+      base_lat: parseFloat(elInputLatitude.value.trim()) || -6.1559421,
+      base_lng: parseFloat(elInputLongitude.value.trim()) || 106.8409752,
+      loc_name: elInputLocName.value.trim() || elLocName.textContent || 'Stasiun Meteorologi Kemayoran',
+      device_name: navigator.userAgent || 'WebApp',
+      updated_at: new Date().toISOString()
+    };
+
+    let response;
+    
+    if (existingUsers && existingUsers.length > 0) {
+      response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_USER_SETTINGS}?id=eq.${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(settingsData)
+      });
+    } else {
+      settingsData.id = userId;
+      settingsData.created_at = new Date().toISOString();
+      
+      response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_USER_SETTINGS}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(settingsData)
+      });
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    return { success: true, userId: userId };
+    
+  } catch (error) {
+    console.error('Supabase error:', error);
+    
+    localStorage.setItem('bmkg_apikey_uploaded', apiKey);
+    localStorage.setItem('bmkg_apikey_upload_date', new Date().toISOString());
+    localStorage.setItem('bmkg_uploaded_nip', nip);
+    
+    if (error.message.includes('koneksi') || error.message.includes('network') || error.message.includes('internet')) {
+      return { 
+        success: false, 
+        message: 'Tidak ada koneksi internet. Data disimpan sementara secara lokal.'
+      };
+    }
+    
+    return { 
+      success: false, 
+      message: error.message || 'Gagal menyimpan ke database.'
+    };
+  }
+}
+
+/* === LOAD SETTINGS === */
+function loadSettings() {
+  const apiKey = localStorage.getItem('bmkg_apikey') || '0321c92441dd9b52d67bf5c072f9c6af';
+  const nip = localStorage.getItem('bmkg_nip') || '198902202010121001';
+  const checkpoint = localStorage.getItem('bmkg_checkpoint') || '1749';
+  const latitude = localStorage.getItem('bmkg_latitude') || '-6.1559421';
+  const longitude = localStorage.getItem('bmkg_longitude') || '106.8409752';
+  const locName = localStorage.getItem('bmkg_loc_name') || 'Stasiun Meteorologi Kemayoran';
+
+  elInputApiKey.value = apiKey;
+  elInputNip.value = nip;
+  elInputCheckpoint.value = checkpoint;
+  elInputLatitude.value = latitude;
+  elInputLongitude.value = longitude;
+  elInputLocName.value = locName;
+  
+  if (locName) {
+    elLocName.textContent = locName;
+  }
+  elLocCoords.textContent = `${latitude}, ${longitude}`;
+  
+  if (navigator.onLine) {
+    elStatusText.textContent = 'Online';
+    elStatusText.style.color = 'var(--accent)';
+  } else {
+    elStatusText.textContent = 'Offline';
+    elStatusText.style.color = 'var(--danger)';
+  }
+}
+
+loadSettings();
+
+/* === MONITOR KONEKSI === */
+window.addEventListener('online', () => {
+  elStatusText.textContent = 'Online';
+  elStatusText.style.color = 'var(--accent)';
+  showToast('success', 'Koneksi Kembali', 'Internet terhubung kembali.');
+  fetchPresenceData();
+});
+
+window.addEventListener('offline', () => {
+  elStatusText.textContent = 'Offline';
+  elStatusText.style.color = 'var(--danger)';
+  showToast('error', 'Koneksi Terputus', 'Tidak ada koneksi internet.');
+});
+
+/* === SIMPAN SETTINGS === */
+document.getElementById('btnSave').addEventListener('click', () => {
+  const apiKey = elInputApiKey.value.trim() || '0321c92441dd9b52d67bf5c072f9c6af';
+  const nip = elInputNip.value.trim();
+  const checkpoint = elInputCheckpoint.value.trim() || '1749';
+  const latitude = elInputLatitude.value.trim() || '-6.1559421';
+  const longitude = elInputLongitude.value.trim() || '106.8409752';
+  const locName = elInputLocName.value.trim() || 'Stasiun Meteorologi Kemayoran';
+
+  localStorage.setItem('bmkg_apikey', apiKey);
+  localStorage.setItem('bmkg_nip', nip);
+  localStorage.setItem('bmkg_checkpoint', checkpoint);
+  localStorage.setItem('bmkg_latitude', latitude);
+  localStorage.setItem('bmkg_longitude', longitude);
+  localStorage.setItem('bmkg_loc_name', locName);
+
+  elLocName.textContent = locName;
+  elLocCoords.textContent = `${latitude}, ${longitude}`;
+
+  closeSheet();
+  showToast('success', 'Tersimpan', 'Pengaturan berhasil disimpan.');
+
+  if (nip) {
+    fetchPresenceData();
+  }
+});
+
+/* === FETCH PRESENCE DATA === */
+async function fetchPresenceData() {
+  const nip = localStorage.getItem('bmkg_nip') || '';
+  if (!nip) {
+    elCheckInTime.textContent = '--:--';
+    elCheckOutTime.textContent = '--:--';
+    elCheckInStatus.innerHTML = '';
+    elCheckOutStatus.innerHTML = '';
+    return;
+  }
+
+  if (!navigator.onLine) {
+    elCheckInTime.textContent = '--:--';
+    elCheckOutTime.textContent = '--:--';
+    elCheckInStatus.innerHTML = `<span class="presence-status-badge warning">Offline</span>`;
+    elCheckOutStatus.innerHTML = `<span class="presence-status-badge warning">Offline</span>`;
+    return;
+  }
+
+  const apiKey = localStorage.getItem('bmkg_apikey') || '0321c92441dd9b52d67bf5c072f9c6af';
+  const now = toWIB(new Date());
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    const url = getApiUrl('datapresence');
+    console.log('Fetching presence from:', url);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Dart/3.11 (dart:io)',
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+        'nip': nip
+      },
+      body: JSON.stringify({
+        start_date: today,
+        end_date: today
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.status === '200' && data.data && data.data.length > 0) {
+      const record = data.data[0];
+      const dateIn = record.date_in ? new Date(record.date_in.replace(' ', 'T') + '+07:00') : null;
+      const dateOut = record.date_out ? new Date(record.date_out.replace(' ', 'T') + '+07:00') : null;
+
+      if (dateIn) {
+        elCheckInTime.textContent = formatTime(dateIn);
+        elCheckInTime.className = 'value present';
+        elCheckInStatus.innerHTML = `<span class="presence-status-badge success">✓ Masuk</span>`;
+      } else {
+        elCheckInTime.textContent = '--:--';
+        elCheckInTime.className = 'value absent';
+        elCheckInStatus.innerHTML = `<span class="presence-status-badge warning">Belum</span>`;
+      }
+
+      if (dateOut) {
+        elCheckOutTime.textContent = formatTime(dateOut);
+        elCheckOutTime.className = 'value present';
+        elCheckOutStatus.innerHTML = `<span class="presence-status-badge success">✓ Pulang</span>`;
+      } else {
+        elCheckOutTime.textContent = '--:--';
+        elCheckOutTime.className = 'value absent';
+        elCheckOutStatus.innerHTML = `<span class="presence-status-badge warning">Belum</span>`;
+      }
+    } else {
+      elCheckInTime.textContent = '--:--';
+      elCheckInTime.className = 'value absent';
+      elCheckOutTime.textContent = '--:--';
+      elCheckOutTime.className = 'value absent';
+      elCheckInStatus.innerHTML = `<span class="presence-status-badge warning">Belum</span>`;
+      elCheckOutStatus.innerHTML = `<span class="presence-status-badge warning">Belum</span>`;
+    }
+  } catch (err) {
+    console.error('Error fetching presence:', err);
+    if (err.name === 'AbortError') {
+      elCheckInTime.textContent = 'Timeout';
+      elCheckOutTime.textContent = 'Timeout';
+    } else {
+      elCheckInTime.textContent = 'Error';
+      elCheckOutTime.textContent = 'Error';
+    }
+    elCheckInStatus.innerHTML = `<span class="presence-status-badge warning">${err.message || 'Gagal'}</span>`;
+    elCheckOutStatus.innerHTML = `<span class="presence-status-badge warning">${err.message || 'Gagal'}</span>`;
+  }
+}
+
+/* === FUNGSI ABSEN === */
+async function absen() {
+  const val = elTanggal.value;
+  if (!val) {
+    showToast('error', 'Waktu Kosong', 'Silakan pilih tanggal dan waktu presensi.');
+    return;
+  }
+
+  const nip = localStorage.getItem('bmkg_nip') || '';
+  if (!nip) {
+    showToast('error', 'NIP Belum Diatur', 'Buka Pengaturan untuk mengisi NIP terlebih dahulu.');
+    openSheet();
+    return;
+  }
+
+  if (!navigator.onLine) {
+    showToast('error', 'Tidak Ada Koneksi', 'Periksa koneksi internet Anda dan coba lagi.');
+    return;
+  }
+
+  const apiKey = localStorage.getItem('bmkg_apikey') || '0321c92441dd9b52d67bf5c072f9c6af';
+  const checkpoint = localStorage.getItem('bmkg_checkpoint') || '1749';
+  const latitude = localStorage.getItem('bmkg_latitude') || '-6.1559421';
+  const longitude = localStorage.getItem('bmkg_longitude') || '106.8409752';
+  const waktu = val.replace('T', ' ') + ':00';
+
+  elBtn.classList.add('loading');
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    const url = getApiUrl('syncpresence');
+    console.log('Sending presence to:', url);
+    console.log('Data:', { gpsckpoint_id: checkpoint, latitude, longitude, time: waktu });
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Dart/3.11 (dart:io)',
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+        'nip': nip
+      },
+      body: JSON.stringify({
+        gpsckpoint_id: checkpoint,
+        latitude: latitude,
+        longitude: longitude,
+        time: waktu
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Response:', data);
+
+    if (data.status === '201') {
+      showToast('success', 'Presensi Berhasil', `NIP ${nip} tercatat pukul ${waktu} WIB`);
+      setTimeout(fetchPresenceData, 1000);
+    } else {
+      showToast('error', 'Gagal Presensi', data.message || `Kode error: ${response.status}`);
+    }
+  } catch (err) {
+    console.error('Absen error:', err);
+    if (err.name === 'AbortError') {
+      showToast('error', 'Timeout', 'Server tidak merespon. Periksa koneksi Anda.');
+    } else {
+      showToast('error', 'Koneksi Gagal', err.message || 'Tidak dapat terhubung ke server. Periksa jaringan Anda.');
+    }
+  } finally {
+    elBtn.classList.remove('loading');
+  }
+}
+
+/* === LOAD PRESENCE DATA ON START === */
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(fetchPresenceData, 500);
+});
+
+setInterval(fetchPresenceData, 30000);
+</script>
+</body>
+</html>

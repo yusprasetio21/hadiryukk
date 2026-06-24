@@ -1,0 +1,9 @@
+{
+  "name": "presensi-bmkg-vercel",
+  "version": "1.0.0",
+  "description": "Presensi BMKG dengan proxy CORS",
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
